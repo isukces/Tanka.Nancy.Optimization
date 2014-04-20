@@ -9,6 +9,7 @@
     public abstract class Bundle
     {
         private readonly List<string> _files;
+        public static global::Nancy.IRootPathProvider rootPathProvider;
 
         protected Bundle(string path)
         {
@@ -43,14 +44,22 @@
         protected abstract string RenderOptimizedHtml();
         protected abstract string RenderUnoptimizedHtml();
 
+        private string GetFullPath(string path)
+        {
+            string rootPath = rootPathProvider.GetRootPath();
+            return System.IO.Path.Combine(rootPath, path.TrimStart('/'));
+        }
+
         public string GetCacheKey()
         {
             var builder = new StringBuilder();
 
             foreach (string file in Files)
             {
-                var fileInfo = new FileInfo(file);
+                var fullName = GetFullPath(file);
+                var fileInfo = new FileInfo(fullName);
                 builder.Append(fileInfo.LastWriteTimeUtc.ToFileTimeUtc());
+                builder.Append(fullName);
             }
 
             string hashThis = builder.ToString();
