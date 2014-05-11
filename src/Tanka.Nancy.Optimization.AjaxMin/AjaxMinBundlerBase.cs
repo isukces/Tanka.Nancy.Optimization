@@ -20,7 +20,7 @@
 
             foreach (string file in bundle.Files)
             {
-                string fullPath = GetFullPath(file);
+                string fullPath = GetFullPath(file.TrimStart('~'));
 
                 if (!File.Exists(fullPath))
                     throw new InvalidOperationException(
